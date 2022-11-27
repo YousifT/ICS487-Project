@@ -31,3 +31,59 @@
 
 // Method 7 - AC-3 & MRV Algorithims
 // (Implemnting them for better tree-search efficincy with Arc-consistency and Forward Checking)
+
+
+
+
+
+
+class TableCSP {
+    constructor(Courses, hours, rules) {
+        this.Courses = Courses
+        this.minHours = hours[0]
+        this.maxHours = hours[1]
+        this.rules = rules
+    }
+
+    is_consistent(state, newCourse) {
+        hoursLoad = 0
+        for (i=0; i<length(state); i++)
+        hoursLoad += state[i].credit
+        
+        if ((hoursLoad + newCourse.credit) > this.maxHours)
+            return false
+        return True
+
+    }
+}
+
+
+class Course {
+    constructor(name, credit, difficulty,  standingLevel, lab) {
+        this.name = name
+        this.credit = credit
+        this.difficulty = difficulty
+        this.standingLevel = standingLevel
+        this.lab = lab
+    }
+
+    get name() {
+        return this.name
+    }
+    get credit() {
+        return this.credit
+    }
+    get difficulty() {
+        return this.difficulty
+    }
+    get standingLevel() {
+        return this.standingLevel
+    }
+    get lab() {
+        return this.lab
+    }
+
+
+
+
+}
