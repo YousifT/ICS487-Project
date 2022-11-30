@@ -39,7 +39,11 @@
 
 
 
-
+const user = {
+    name: "Ali",
+    GPA: 2.8,
+    standing: "Freshmen"
+}
 
 class TableCSP {
     constructor(Courses, hours, rules) {
@@ -49,16 +53,15 @@ class TableCSP {
         this.rules = rules
     }
 }
-    function is_consistent(state, newCourse) {
+    function is_consistent(problem, solution, newitem) {
         var hoursLoad = 0
-        for (var i=0; i<state.length; i++)
-        hoursLoad += state[i].credit
+        for (var i=0; i<solution.length; i++)
+        hoursLoad += solution[i].credit
 
-        console.log("Current Credit load:" + hoursLoad)
         
 
-        if (!(newCourse in state)) {
-            if ((hoursLoad + newCourse.credit) > this.maxHours)
+        if (!(newitem in solution)) {
+            if ((hoursLoad + newitem.credit) > problem.maxHours)
             return false
         return true
         }
@@ -75,6 +78,7 @@ class Course {
         this.difficulty = difficulty
         this.standingLevel = standingLevel
         this.lab = lab
+        this.importance = 0
     }
 
     get name() {
@@ -99,51 +103,128 @@ function generateTables() {
     
 
 }
-
 var res = []
 function TableDFS(problem, solution, depthGoal) {
-    // Problem is an instance of TableCSP 
-    // Check if a problem is complete, i.e: len == the depthGoal
-    // if problem is not complete, assign a random new Course to the solution
-    // Check solution is consistent
-
-
 
     let solution_Copy = JSON.parse(JSON.stringify(solution))
     let problem_Copy = JSON.parse(JSON.stringify(problem))
 
-    if (problem_Copy.Courses.length == 0) {
-        res.push(solution)
+    if (problem_Copy.Courses.length == 0 || solution_Copy.length == depthGoal) {
+        res.push(solution_Copy)
         return true
     }
 
     // Assign a new random value to Sol_copy
-    problem_Copy.Courses.forEach(CourseItem => {
-        if (is_consistent(solution_Copy, CourseItem)) {
-            // update copied problem domain
+
+    if (solution_Copy.length == 0) {
+        problem_Copy.Courses = DFSstart(problem_Copy)
+        let root = getHighestPrio(problem)
+        solution_Copy.push()
         var ind = problem_Copy.Courses.findIndex( x => 
-            x.name === CourseItem.name
+            x.name === root.name
             );
 
             if (ind !== -1) {
                 problem_Copy.Courses.splice(ind, 1)
             }
+    }
 
-            // Append CourseItem to Solution_Copy
-            solution_Copy.push(CourseItem)
-            
-            return TableDFS(problem_Copy, solution_Copy, depthGoal)
-        }
-        
-    });
+    // Make this block loop on all items
+    highestPrioItem = getHighestPrio(problem_Copy)
+
+    if (highestPrioItem.importance !== 0) {
+
+        let consistencyCheck = is_consistent(problem_Copy, solution_Copy, highestPrioItem)
+    
+            if (consistencyCheck ===  true) {
+                // update copied problem domain
+                var ind = problem_Copy.Courses.findIndex( x => 
+                x.name === highestPrioItem.name
+                );
+    
+                if (ind !== -1) {
+                    problem_Copy.Courses.splice(ind, 1)
+                }
+    
+                // Append CourseItem to Solution_Copy
+                solution_Copy.push(highestPrioItem)
+                    
+                TableDFS(problem_Copy, solution_Copy, depthGoal)
+    
+            }
+
+    }
+    else {
+        problem_Copy.Courses.forEach( item => {
+
+            let consistencyCheck = is_consistent(problem_Copy, solution_Copy, item)
+    
+            if (consistencyCheck ===  true) {
+                // update copied problem domain
+                var ind = problem_Copy.Courses.findIndex( x => 
+                x.name === item.name
+                );
+    
+                if (ind !== -1) {
+                    problem_Copy.Courses.splice(ind, 1)
+                }
+    
+                // Append CourseItem to Solution_Copy
+                solution_Copy.push(item)
+                    
+                TableDFS(problem_Copy, solution_Copy, depthGoal)
+    
+            }
+    
+        });
+
+    }
     
     
+       
     
 
 }
 
-function Evaluation (table) {
+function DFSstart (problem) {
 
+    if (user.standing == "Senior") {
+        problem.Courses.forEach(Course => {
+            if (Course.standingLevel === "Junior")
+                Course.importance = 1
+            if (Course.standingLevel === "Sophomore")
+                Course.importance = 2
+            if (Course.standingLevel === "Freshmen")
+                Course.importance = 4
+
+        });
+    }
+    if (user.standing == "Junior") {
+        problem.Courses.forEach( Course => {
+            if (Course.standingLevel === "Sophomore")
+                Course.importance = 2
+            if (Course.standingLevel === "Freshmen")
+                Course.importance = 4
+        });
+    }
+    if (user.standing == "Sophomore") {
+        problem.Courses.forEach( Course => {
+            if (Course.standingLevel === "Freshmen")
+                Course.importance = 4
+        });
+    }
+
+    return problem.Courses
+}
+
+
+function getHighestPrio(problem) {
+    let prio =  problem.Courses[Math.floor(Math.random() *  problem.Courses.length)];
+    for (let i=0; i<problem.Courses.length; i++) {
+        if (problem.Courses[i].importance > prio.importance)
+            prio = problem.Courses[i]
+    }
+    return prio
 }
 
 
@@ -210,10 +291,12 @@ ExampleRules = []
 
 ExampleProblem = new TableCSP(ExampleCourses, ExampleHours, ExampleRules)
 
-console.log(typeof(c1))
-console.log(typeof(c2))
 
 
 Sol4 = []
+Sol5 = []
 TableDFS(ExampleProblem, Sol4, 4)
-console.log(Sol4)
+console.log("Solution 4:" + res.length)
+// TableDFS(ExampleProblem, Sol5, 5)
+console.log("Solutions 5:" + res.length)
+console.log(res)
