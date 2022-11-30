@@ -48,22 +48,24 @@ class TableCSP {
         this.maxHours = hours[1]
         this.rules = rules
     }
-
-    is_consistent(state, newCourse) {
-        hoursLoad = 0
-        for (i=0; i<length(state); i++)
+}
+    function is_consistent(state, newCourse) {
+        var hoursLoad = 0
+        for (var i=0; i<state.length; i++)
         hoursLoad += state[i].credit
+
+        console.log("Current Credit load:" + hoursLoad)
         
 
-        if (!(newCourse in state.Courses)) {
+        if (!(newCourse in state)) {
             if ((hoursLoad + newCourse.credit) > this.maxHours)
             return false
-        return True
+        return true
         }
-        return False
+        return false
 
     }
-}
+
 
 
 class Course {
@@ -93,31 +95,125 @@ class Course {
 }
 
 
-TableDFS(problem, solution, depthGoal) {
+function generateTables() {
+    
+
+}
+
+var res = []
+function TableDFS(problem, solution, depthGoal) {
     // Problem is an instance of TableCSP 
     // Check if a problem is complete, i.e: len == the depthGoal
     // if problem is not complete, assign a random new Course to the solution
-    // Check solution is consistent 
+    // Check solution is consistent
 
-    if (length(solution) == depthGoal)
-        return solution
-    solution_Copy = JSON.parse(JSON.stringify(solution))
-    problem_Copy = JSON.parse(JSON.stringify(problem))
+
+
+    let solution_Copy = JSON.parse(JSON.stringify(solution))
+    let problem_Copy = JSON.parse(JSON.stringify(problem))
+
+    if (problem_Copy.Courses.length == 0) {
+        res.push(solution)
+        return true
+    }
 
     // Assign a new random value to Sol_copy
-    for (CourseItem in domain_Copy) {
-        if (problem.is_consistent(solution_Copy, CourseItem)) {
+    problem_Copy.Courses.forEach(CourseItem => {
+        if (is_consistent(solution_Copy, CourseItem)) {
             // update copied problem domain
-            index = Array.prototype.indexOf(problem_Copy.Course, CourseItem)
-            problem_Copy.Course.splice(index, 1)
+        var ind = problem_Copy.Courses.findIndex( x => 
+            x.name === CourseItem.name
+            );
+
+            if (ind !== -1) {
+                problem_Copy.Courses.splice(ind, 1)
+            }
 
             // Append CourseItem to Solution_Copy
             solution_Copy.push(CourseItem)
             
             return TableDFS(problem_Copy, solution_Copy, depthGoal)
         }
-    }
+        
+    });
+    
+    
+    
+
+}
+
+function Evaluation (table) {
 
 }
 
 
+var c1 = {
+    name: "ICS102",
+    credit: 4,
+    difficulty: "Easy",
+    standingLevel: "Senior",
+    lab: false
+}
+
+var c2 = {
+    name: "ICS202",
+    credit: 3,
+    difficulty: "Hard",
+    standingLevel: "Freshman",
+    lab: true
+}
+
+var c3 = {
+    name: "ICS203",
+    credit: 4,
+    difficulty: "Hard",
+    standingLevel: "Freshman",
+    lab: true
+}
+
+var c4 = {
+    name: "ICS333",
+    credit: 4,
+    difficulty: "Medium",
+    standingLevel: "Junior",
+    lab: false
+}
+
+var c5 = {
+    name: "ICS345",
+    credit: 2,
+    difficulty: "Easy",
+    standingLevel: "Freshman",
+    lab: true
+}
+
+var c6 = {
+    name: "ICS410",
+    credit: 4,
+    difficulty: "Hard",
+    standingLevel: "Senior",
+    lab: true
+}
+
+var c7 = {
+    name: "ICS442",
+    credit: 3,
+    difficulty: "Hard",
+    standingLevel: "Freshman",
+    lab: true
+}
+
+
+ExampleHours = [12, 19]
+ExampleCourses = [c1, c2, c3, c4, c5, c6, c7]
+ExampleRules = []
+
+ExampleProblem = new TableCSP(ExampleCourses, ExampleHours, ExampleRules)
+
+console.log(typeof(c1))
+console.log(typeof(c2))
+
+
+Sol4 = []
+TableDFS(ExampleProblem, Sol4, 4)
+console.log(Sol4)
