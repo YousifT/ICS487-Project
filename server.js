@@ -119,6 +119,8 @@ function TableDFS(problem, solution, depthGoal) {
     if (solution_Copy.length == 0) {
         problem_Copy.Courses = DFSstart(problem_Copy)
         let root = getHighestPrio(problem)
+        ///// IF ROOT.IMPORTANCE IS 1 (or 0) Call a different TableDFS
+        console.log("root: " + root.name)
         solution_Copy.push()
         var ind = problem_Copy.Courses.findIndex( x => 
             x.name === root.name
@@ -129,58 +131,36 @@ function TableDFS(problem, solution, depthGoal) {
             }
     }
 
+
+    // If highestPrio > 1 add highest Prio 
+    // highestPrio = 4, 95% probability
+    // highPrio = 3, 85%, 2 = 65%, 
+
+
     // Make this block loop on all items
-    highestPrioItem = getHighestPrio(problem_Copy)
+    problem_Copy.Courses.forEach( item => {
 
-    if (highestPrioItem.importance !== 0) {
+        let consistencyCheck = is_consistent(problem_Copy, solution_Copy, item)
+        if (consistencyCheck ===  true) {
+            // update copied problem domain
+            var ind = problem_Copy.Courses.findIndex( x => 
+            x.name === item.name
+            );
 
-        let consistencyCheck = is_consistent(problem_Copy, solution_Copy, highestPrioItem)
-    
-            if (consistencyCheck ===  true) {
-                // update copied problem domain
-                var ind = problem_Copy.Courses.findIndex( x => 
-                x.name === highestPrioItem.name
-                );
-    
-                if (ind !== -1) {
-                    problem_Copy.Courses.splice(ind, 1)
-                }
-    
-                // Append CourseItem to Solution_Copy
-                solution_Copy.push(highestPrioItem)
-                    
-                TableDFS(problem_Copy, solution_Copy, depthGoal)
-    
+            if (ind !== -1) {
+                problem_Copy.Courses.splice(ind, 1)
             }
 
-    }
-    else {
-        problem_Copy.Courses.forEach( item => {
+            // Append CourseItem to Solution_Copy
+            solution_Copy.push(item)
+                
+            TableDFS(problem_Copy, solution_Copy, depthGoal)
+            // Pop newItem
+            // removed newItem from the domain of that parent
+            // run parent again
+        }
 
-            let consistencyCheck = is_consistent(problem_Copy, solution_Copy, item)
-    
-            if (consistencyCheck ===  true) {
-                // update copied problem domain
-                var ind = problem_Copy.Courses.findIndex( x => 
-                x.name === item.name
-                );
-    
-                if (ind !== -1) {
-                    problem_Copy.Courses.splice(ind, 1)
-                }
-    
-                // Append CourseItem to Solution_Copy
-                solution_Copy.push(item)
-                    
-                TableDFS(problem_Copy, solution_Copy, depthGoal)
-    
-            }
-    
-        });
-
-    }
-    
-    
+    });
        
     
 
@@ -232,7 +212,7 @@ var c1 = {
     name: "ICS102",
     credit: 4,
     difficulty: "Easy",
-    standingLevel: "Senior",
+    standingLevel: "Freshmen",
     lab: false
 }
 
@@ -240,7 +220,7 @@ var c2 = {
     name: "ICS202",
     credit: 3,
     difficulty: "Hard",
-    standingLevel: "Freshman",
+    standingLevel: "Freshmen",
     lab: true
 }
 
@@ -248,7 +228,7 @@ var c3 = {
     name: "ICS203",
     credit: 4,
     difficulty: "Hard",
-    standingLevel: "Freshman",
+    standingLevel: "Freshmen",
     lab: true
 }
 
@@ -256,7 +236,7 @@ var c4 = {
     name: "ICS333",
     credit: 4,
     difficulty: "Medium",
-    standingLevel: "Junior",
+    standingLevel: "Freshmen",
     lab: false
 }
 
@@ -264,7 +244,7 @@ var c5 = {
     name: "ICS345",
     credit: 2,
     difficulty: "Easy",
-    standingLevel: "Freshman",
+    standingLevel: "Freshmen",
     lab: true
 }
 
@@ -272,7 +252,7 @@ var c6 = {
     name: "ICS410",
     credit: 4,
     difficulty: "Hard",
-    standingLevel: "Senior",
+    standingLevel: "Freshmen",
     lab: true
 }
 
@@ -280,13 +260,22 @@ var c7 = {
     name: "ICS442",
     credit: 3,
     difficulty: "Hard",
-    standingLevel: "Freshman",
+    standingLevel: "Freshmen",
+    lab: true
+}
+
+var c8 = {
+    name: "ICS400",
+    credit: 1,
+    difficulty: "Hard",
+    standingLevel: "Freshmen",
     lab: true
 }
 
 
+
 ExampleHours = [12, 19]
-ExampleCourses = [c1, c2, c3, c4, c5, c6, c7]
+ExampleCourses = [c1, c2, c3, c4, c5, c6, c7, c8]
 ExampleRules = []
 
 ExampleProblem = new TableCSP(ExampleCourses, ExampleHours, ExampleRules)
@@ -295,8 +284,11 @@ ExampleProblem = new TableCSP(ExampleCourses, ExampleHours, ExampleRules)
 
 Sol4 = []
 Sol5 = []
-TableDFS(ExampleProblem, Sol4, 4)
-console.log("Solution 4:" + res.length)
-// TableDFS(ExampleProblem, Sol5, 5)
-console.log("Solutions 5:" + res.length)
+Sol6 = []
+Sol7 = []
+
+TableDFS(ExampleProblem, Sol4, 5)
+
+
+console.log("Solutions:" + res.length)
 console.log(res)
