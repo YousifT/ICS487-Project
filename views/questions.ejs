@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Planner</title>
+</head>
+<body>
+    <h1>ISE Planner</h1>
+    <form action="">
+        <p>Please fill your information:</p>
+        <label for="">GPA:</label>
+        <input type="text" name="gpa" id="gpa" required>
+        <label for="">Credits done:</label>
+        <input type="text" name="credit" id="credit" required>
+        <label for="">Standing:</label>
+        <select name="standing" id="standing">
+            <option value="orientation">Orientation</option>
+            <option value="freshman">freshman</option>
+            <option value="sophomore">Sophomore</option>
+            <option value="junior">Junior</option>
+            <option value="senior">Senior</option>
+        </select>
+        <br>
+        <label for="">Choose the courses that you are currently taking and courses you have done: </label>
+        <fieldset>
+            <legend>Courses</legend>
+            <% courses.forEach((course) => { %>
+                <label for=""><%= course %> </label>
+                <input type="checkbox" name="<%= course %> " id="">
+            <% }) %>
+        </fieldset>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
