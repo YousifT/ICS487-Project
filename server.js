@@ -40,9 +40,10 @@
 
 
 const user = {
-    name: "Ali",
-    GPA: 2.8,
-    standing: "Freshmen"
+    name: "Rakan", 
+    GPA: 3.1,
+    standing: "Junior",
+    partTimeHours: 0
 }
 
 class TableCSP {
@@ -53,31 +54,17 @@ class TableCSP {
         this.rules = rules
     }
 }
-    function is_consistent(problem, solution, newitem) {
-        var hoursLoad = 0
-        for (var i=0; i<solution.length; i++)
-        hoursLoad += solution[i].credit
-
-        
-
-        if (!(newitem in solution)) {
-            if ((hoursLoad + newitem.credit) > problem.maxHours)
-            return false
-        return true
-        }
-        return false
-
-    }
 
 
 
 class Course {
-    constructor(name, credit, difficulty,  standingLevel, lab) {
+    constructor(name, credit, difficulty,  standingLevel, lab, project) {
         this.name = name
         this.credit = credit
         this.difficulty = difficulty
         this.standingLevel = standingLevel
         this.lab = lab
+        this.project = project
         this.importance = 0
     }
 
@@ -98,30 +85,93 @@ class Course {
     }
 }
 
+function is_consistent(problem, solution, newitem) {
+    var hoursLoad = 0
+    for (var i=0; i<solution.length; i++) {
+        hoursLoad += solution[i].credit
+    }
 
-function generateTables() {
-    
+
+    if (!(newitem in solution)) {
+        if ((hoursLoad + newitem.credit) > problem.maxHours)
+        return false
+    return true
+    }
+    return false
 
 }
-var res = []
+
+function minHoursAchieved(problem, solution) {
+    var hoursLoad = 0
+    for (var i=0; i<solution.length; i++) {
+        hoursLoad += solution[i].credit
+    }
+
+    if (hoursLoad > problem.minHours) 
+        return true
+    else
+        return false
+}
+
+var solution_result = []
+function generate_Tables(problem, solution, summer) {
+    var solution_array = []
+    
+    if (!summer) {
+        TableDFS(problem, solution_array, 3)
+        TableDFS(problem, solution_array, 4)
+        TableDFS(problem, solution_array, 5)
+        TableDFS(problem, solution_array, 6)
+        TableDFS(problem, solution_array, 7)
+    }
+    else {
+        TableDFS(problem, solution_array, 1)
+        TableDFS(problem, solution_array, 2)
+        TableDFS(problem, solution_array, 3)
+    }
+
+    final_result = evaluate_Table(solution_result)
+
+    console.log("FINAL RESULT\nTABLE ONE:")
+    console.log(table_toPrint(final_result[0]))
+    console.log("TABLE TWO:")
+    console.log(table_toPrint(final_result[1]))
+    console.log("TABLE THREE:")
+    console.log(table_toPrint(final_result[2]))
+
+
+}
+
+
+function table_toPrint(arr) {
+    for (let j=0; j<arr.length; j++) 
+    names += arr[j].name + " , "
+    let holder = Math.round(getValue(arr) * 1000 ) / 1000
+    console.log(" With Courses: " + names + " Evaluation is:" + holder)
+}
+
 function TableDFS(problem, solution, depthGoal) {
 
     let solution_Copy = JSON.parse(JSON.stringify(solution))
     let problem_Copy = JSON.parse(JSON.stringify(problem))
 
-    if (problem_Copy.Courses.length == 0 || solution_Copy.length == depthGoal) {
-        res.push(solution_Copy)
-        return true
+    if (solution_Copy.length === depthGoal) {
+        if (minHoursAchieved) {
+            solution_result.push(solution_Copy)
+            return true
+        }
+
+    }
+    if (problem_Copy.Courses.length === 0 ) {
+        return false
     }
 
-    // Assign a new random value to Sol_copy
 
-    if (solution_Copy.length == 0) {
+
+    if (solution_Copy.length === 0) {
         problem_Copy.Courses = DFSstart(problem_Copy)
         let root = getHighestPrio(problem)
-        ///// IF ROOT.IMPORTANCE IS 1 (or 0) Call a different TableDFS
-        console.log("root: " + root.name)
-        solution_Copy.push()
+                solution_Copy.push(root)
         var ind = problem_Copy.Courses.findIndex( x => 
             x.name === root.name
             );
@@ -129,16 +179,83 @@ function TableDFS(problem, solution, depthGoal) {
             if (ind !== -1) {
                 problem_Copy.Courses.splice(ind, 1)
             }
+
+
+        let prioHolder = getHighestPrio(problem_Copy)
+        let accept = false
+        while (accept === false) {
+            let check = is_consistent(problem_Copy, solution_Copy, prioHolder)
+            random = Math.random()
+            if (prioHolder.importance === 3 && check == true) {
+                if (random <= 0.95) {
+                    solution_Copy.push(prioHolder)
+                    var ind = problem_Copy.Courses.findIndex( x => 
+                        x.name === prioHolder.name
+                        );
+            
+                        if (ind !== -1) {
+                            problem_Copy.Courses.splice(ind, 1)
+                        }
+                        accept = true
+                        
+                }
+            }
+    
+            if (prioHolder.importance === 2 && check == true) {
+                if (random <= 0.75) {
+                    solution_Copy.push(prioHolder)
+                    var ind = problem_Copy.Courses.findIndex( x => 
+                        x.name === prioHolder.name
+                        );
+            
+                        if (ind !== -1) {
+                            problem_Copy.Courses.splice(ind, 1)
+                        }
+                        accept = true
+                }
+            }
+    
+    
+            if (prioHolder.importance === 1 && check == true) {
+                if (random <= 0.50) {
+                    solution_Copy.push(prioHolder)
+                    var ind = problem_Copy.Courses.findIndex( x => 
+                        x.name === prioHolder.name
+                        );
+            
+                        if (ind !== -1) {
+                            problem_Copy.Courses.splice(ind, 1)
+                        }
+                        accept = true
+                }
+            }
+    
+            if (prioHolder.importance === 0 && check == true) {
+                
+                solution_Copy.push(prioHolder)
+                var ind = problem_Copy.Courses.findIndex( x => 
+                    x.name === prioHolder.name
+                    );
+        
+                    if (ind !== -1) {
+                        problem_Copy.Courses.splice(ind, 1)
+                    }
+                    accept = true
+                
+            }
+    
+        }    
     }
 
 
-    // If highestPrio > 1 add highest Prio 
-    // highestPrio = 4, 95% probability
-    // highPrio = 3, 85%, 2 = 65%, 
+    for (let j=0; j<problem_Copy.Courses.length; j++) {
+        rndmIndex = Math.floor(Math.random() *  problem.Courses.length)
+        let item = problem_Copy.Courses[rndmIndex]
+        while (!item) {
+            rndmIndex = Math.floor(Math.random() *  problem.Courses.length)
+            item = problem_Copy.Courses[rndmIndex]
+        }
 
-
-    // Make this block loop on all items
-    problem_Copy.Courses.forEach( item => {
 
         let consistencyCheck = is_consistent(problem_Copy, solution_Copy, item)
         if (consistencyCheck ===  true) {
@@ -155,12 +272,19 @@ function TableDFS(problem, solution, depthGoal) {
             solution_Copy.push(item)
                 
             TableDFS(problem_Copy, solution_Copy, depthGoal)
-            // Pop newItem
-            // removed newItem from the domain of that parent
-            // run parent again
+            
+            solution_Copy.pop()
+        }
+        else {
+            continue
         }
 
-    });
+    }
+    if (solution_Copy.length !== 1) {
+        solution_Copy.pop()
+        TableDFS(problem_Copy, solution_Copy, depthGoal)
+    }
+
        
     
 
@@ -172,26 +296,40 @@ function DFSstart (problem) {
         problem.Courses.forEach(Course => {
             if (Course.standingLevel === "Junior")
                 Course.importance = 1
-            if (Course.standingLevel === "Sophomore")
+            else if (Course.standingLevel === "Sophomore")
                 Course.importance = 2
-            if (Course.standingLevel === "Freshmen")
-                Course.importance = 4
+            else if (Course.standingLevel === "Freshmen")
+                Course.importance = 3
+            else {
+                Course.importance = 0
+            }
 
         });
     }
-    if (user.standing == "Junior") {
+    else if (user.standing == "Junior") {
         problem.Courses.forEach( Course => {
             if (Course.standingLevel === "Sophomore")
                 Course.importance = 2
-            if (Course.standingLevel === "Freshmen")
-                Course.importance = 4
+            else if (Course.standingLevel === "Freshmen")
+                Course.importance = 3
+            else {
+                Course.importance = 0
+            }
         });
     }
-    if (user.standing == "Sophomore") {
+    else if (user.standing == "Sophomore") {
         problem.Courses.forEach( Course => {
             if (Course.standingLevel === "Freshmen")
-                Course.importance = 4
+                Course.importance = 3
+            else {
+                Course.importance = 0
+            }
         });
+    }
+    else {
+        problem.Courses.forEach( Course => {
+            Course.importance = 0
+        })
     }
 
     return problem.Courses
@@ -205,6 +343,98 @@ function getHighestPrio(problem) {
             prio = problem.Courses[i]
     }
     return prio
+}
+
+
+function GPA_Range(user) {
+    let range = []
+    if (user.GPA >= 3.5) {
+        range[0] = 25
+        range[1] = 40
+
+    }
+    else if (user.GPA >= 3) {
+        range[0] = 41
+        range[1] = 53
+    }
+    else if (user.GPA >= 2.5) {
+        range[0] = 54
+        range[1] = 65
+    }
+    else {
+        range[0] = 66
+        range[1] = 80
+    }
+
+
+
+    if (user.partTimeHours > 0) {
+        range[1] += Math.ceil(user.partTimeHours*1.5)
+    }
+    return range
+
+}
+
+function evaluate_Table(results) {
+    let max1 = 0
+    let max1Table = undefined
+    let max2 = 0
+    let max2Table = undefined
+    let max3 = 0
+    let max3Table = undefined
+
+    GPA_min = GPA_Range(user)[0]
+    GPA_max = GPA_Range(user)[1]
+
+    for (let i=0; i<results.length; i++) {
+        let names = ""
+        for (let j=0; j<results[i].length; j++) 
+            names += results[i][j].name + " , "
+        let holder = Math.round(getValue(results[i]) * 1000 ) / 1000
+         console.log("Table " + i + " With Courses: " + names + " Evaluation is:" + holder)
+
+        if (holder >= GPA_min && holder <= GPA_max) {
+            if (holder > max1) {
+                max1 = holder
+                max1Table = results[i]
+            }
+            else if (holder > max2) {
+                max2 = holder
+                max2Table = results[i]
+            }
+            else if (holder > max3) {
+                max3 = holder
+                max3Table = results[i]
+            }
+        } 
+        // check user.gpa to determine the range
+        // if in range, accept it and update Max1-3 if needed
+        // else, reject the table and continue to next one
+
+    }
+    max3_result = [max1Table, max2Table, max3Table]
+    return max3_result
+
+}
+
+function getValue(table) {
+
+    // start at 100, reduce based on hours/difficulty
+    let score = 100
+    totalHours = 0
+    for (let j=0; j<table.length; j++) {
+        if (table[j].importance > 1) {
+            score += 10
+        }
+        score -= (table[j].credit*table[j].difficulty)/0.8
+        totalHours += table[j].credit 
+        if (table[j].lab == true)
+            score -= 3
+        if (table[j].project = true)
+            score -= 4
+    }
+    score -= totalHours
+    return score
 }
 
 
@@ -272,23 +502,166 @@ var c8 = {
     lab: true
 }
 
+var c9 = {
+    name: "ICS1302",
+    credit: 2,
+    difficulty: "Easy",
+    standingLevel: "Freshmen",
+    lab: false
+}
+var c10 = {
+    name: "ICS1202",
+    credit: 2,
+    difficulty: "Easy",
+    standingLevel: "Freshmen",
+    lab: false
+}
+var c11 = {
+    name: "ICS1012",
+    credit: 3,
+    difficulty: "Easy",
+    standingLevel: "Freshmen",
+    lab: true
+}
+var c12 = {
+    name: "ICS2102",
+    credit: 4,
+    difficulty: "Easy",
+    standingLevel: "Freshmen",
+    lab: false
+}
+var c13 = {
+    name: "ICS2102",
+    credit: 3,
+    difficulty: "Easy",
+    standingLevel: "Freshmen",
+    lab: false
+}
+
+
+var course1 = {
+    name: "ISE321",
+    credit: 3,
+    difficulty: 3.25,
+    standingLevel: "Junior",
+    project: true,
+    lab: false
+}
+
+var course2 = {
+    name: "ISE391",
+    credit: 2,
+    standingLevel: "Junior",
+    difficulty: 2.3,
+    project: true,
+    lab: true
+}
+
+var course3 = {
+    name: "ISE402",
+    credit: 3,
+    standingLevel: "Senior",
+    difficulty: 2.76,
+    project: false,
+    lab: false
+}
+
+var course4 = {
+    name: "ISE405",
+    credit: 3,
+    standingLevel: "Senior",
+    difficulty: 3.23,
+    project: true,
+    lab: true
+}
+
+var course5 = {
+    name: "ISE422",
+    credit: 3,
+    standingLevel: "Senior",
+    difficulty: 3.34,
+    project: true,
+    lab: false
+}
+
+var course6 = {
+    name: "ISE4xx",
+    credit: 3,
+    standingLevel: "Senior",
+    difficulty: 2.75,
+    project: true,
+    lab: false
+}
+
+var course7 = {
+    name: "ISE4xx_2",
+    credit: 3,
+    standingLevel: "Senior",
+    difficulty: 2.75,
+    project: false,
+    lab: false
+}
+
+var course8 = {
+    name: "XExxx",
+    credit: 3,
+    standingLevel: "Junior",
+    difficulty: 3,
+    project: false,
+    lab: false
+}
+
+var course9 = {
+    name: "Cise305",
+    credit: 3,
+    standingLevel: "Junior",
+    difficulty: 2.5,
+    project: false,
+    lab: false
+}
+
+var course10 = {
+    name: "GSxxx",
+    credit: 3,
+    standingLevel: "Junior",
+    difficulty: 2.25,
+    project: false,
+    lab: false
+}
+
+var course11 = {
+    name: "IASxxx",
+    credit: 2,
+    standingLevel: "Junior",
+    difficulty: 1,
+    project: false,
+    lab: false
+}
+var course12 = {
+  name: "ISE205",
+  credit: 3,
+  standingLevel: "Sophomore",
+  difficulty: 2.75,
+  project: false,
+  lab: false
+}
+
+
+
 
 
 ExampleHours = [12, 19]
-ExampleCourses = [c1, c2, c3, c4, c5, c6, c7, c8]
+ExampleCourses = [course1,course2,course3,course4,course5,course6,course7,course8,course9,course10,course11]
 ExampleRules = []
 
 ExampleProblem = new TableCSP(ExampleCourses, ExampleHours, ExampleRules)
 
 
 
-Sol4 = []
-Sol5 = []
-Sol6 = []
-Sol7 = []
 
-TableDFS(ExampleProblem, Sol4, 5)
+generate_Tables(ExampleProblem, ExampleCourses, false)
 
 
-console.log("Solutions:" + res.length)
-console.log(res)
+
+console.log("Solutions:" + solution_result.length)
+//console.log(solution_result)
