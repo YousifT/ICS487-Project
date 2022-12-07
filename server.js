@@ -4,7 +4,7 @@ const user = {
     GPA: 2.7,
     standing: "Sophomore",
     partTimeHours: 0,
-    summer: true
+    summer: false
 }
 
 class TableCSP {
@@ -360,16 +360,22 @@ function evaluate_Table(results) {
     for (let i=0; i<results.length; i++) {
         let holder = Math.round(getValue(results[i]) * 10000 ) / 10000
         
-            console.log("Table " + i)
-            table_toPrint(results[i])
+            //console.log("Table " + i)
+            //table_toPrint(results[i])
         
         if (!user.summer) {
             if (holder >= GPA_min && holder <= GPA_max) {
                 if (holder > max1) {
+                    max3 = max2
+                    max3Table = max2Table
+                    max2 = max1
+                    max2Table = max1Table
                     max1 = holder
                     max1Table = results[i]
                 }
                 else if (holder > max2 && holder !== max1 && (max1-holder) > 1.1) {
+                    max3 = max2
+                    max3Table = max2Table
                     max2 = holder
                     max2Table = results[i]
                 }
@@ -382,10 +388,16 @@ function evaluate_Table(results) {
         else {
             if (holder >= GPA_min && holder <= GPA_max) {
                 if (holder > max1) {
+                    max3 = max2
+                    max3Table = max2Table
+                    max2 = max1
+                    max2Table = max1Table
                     max1 = holder
                     max1Table = results[i]
                 }
                 else if (holder > max2 && holder !== max1 && (max1-holder) > 0.5) {
+                    max3 = max2
+                    max3Table = max2Table
                     max2 = holder
                     max2Table = results[i]
                 }
@@ -594,7 +606,7 @@ SummerExampleProblem = new TableCSP(SummerExampleCourses, SummerHours)
 
 
 
-//generate_Tables(ExampleProblem, false)
-generate_Tables(SummerExampleProblem)
+generate_Tables(ExampleProblem)
+//generate_Tables(SummerExampleProblem)
 
 
