@@ -1,49 +1,10 @@
 
-// Setup the file for integration with node.js / Express & add the frontend pages
-
-
-
-// We need a method to 
-// Given: Array of courses the user already finished
-// Result: Array with the remaining courses left for him. 
-// Note: filter all courses based on standing level and pre-requisite requirements fulfillled or not.
-
-
-// Method 2:
-// Given student GPA, and term status (summer or regular)
-// Decide Number of hours allowed
-
-
-// Output after method 2 should be array of (filtered) courses left for the student to take. Every 
-// course in the format of a course object
-// and an array "Hours" of size two. Hours[0] = Min Hours allowed, Hours[1] = Max hours allowed 
-
-// Method 3
-// Generate tables
-
-
-// Method 4
-// Check a table partial solution does not violate any constraint rules
-
-
-// Method 5: 
-// Check if a table is_goal (Complete and Correct)
-
-// Method 6:
-// Given a complete table, generate a rating for how "good" that table is
-
-
-// Method 7 - AC-3 & MRV Algorithims
-// (Implemnting them for better tree-search efficincy with Arc-consistency and Forward Checking)
-
-
-
-
 const user = {
     name: "Rakan", 
     GPA: 2.7,
-    standing: "Junior",
-    partTimeHours: 0
+    standing: "Sophomore",
+    partTimeHours: 0,
+    summer: true
 }
 
 class TableCSP {
@@ -99,10 +60,10 @@ function minHoursAchieved(problem, solution) {
 }
 
 var solution_result = []
-function generate_Tables(problem, solution, summer) {
+function generate_Tables(problem) {
     var solution_array = []
     
-    if (!summer) {
+    if (!user.summer) {
         TableDFS(problem, solution_array, 3)
         TableDFS(problem, solution_array, 4)
         TableDFS(problem, solution_array, 5)
@@ -328,30 +289,59 @@ function getHighestPrio(problem) {
 
 function GPA_Range(user) {
     let range = []
-    if (user.GPA >= 3.5) {
-        range[0] = 10
-        range[1] = 36
+    if (user.summer === false) {
+        
+        if (user.GPA >= 3.5) {
+            if (user.summer) {
+                range[0] = 10
+                range[1] = 36
+            }
+            else {
+                range[0] = 40
+                range[1] = 50
+            }
 
-    }
-    else if (user.GPA >= 3) {
-        range[0] = 35
-        range[1] = 42
-    }
-    else if (user.GPA >= 2.5) {
-        range[0] = 41
-        range[1] = 47
+
+        }
+        else if (user.GPA >= 3) {
+            range[0] = 35
+            range[1] = 42
+        }
+        else if (user.GPA >= 2.5) {
+            range[0] = 41
+            range[1] = 47
+        }
+        else {
+            range[0] = 48
+            range[1] = 55
+        } 
+
+
+        if (user.partTimeHours > 0) {
+            range[1] += Math.ceil(user.partTimeHours*1.5)
+            if (user.GPA >= 3.5)
+                range[1] += 3.5
+        }
     }
     else {
-        range[0] = 48
-        range[1] = 55
-    } 
-
-
-    if (user.partTimeHours > 0) {
-        range[1] += Math.ceil(user.partTimeHours*1.5)
-        if (user.GPA >= 3.5)
-            range[1] += 3.5
+        if (user.GPA >= 3.5) {
+            range[0] = 60
+            range[1] = 80
+        }
+        else if (user.GPA >= 2.5) { 
+            range[0] = 70
+            range[1] = 89
+        }
+        else {
+            range[0] = 73
+            range[1] = 95
+        }
     }
+
+    
+
+
+
     return range
 
 }
@@ -369,26 +359,43 @@ function evaluate_Table(results) {
 
     for (let i=0; i<results.length; i++) {
         let holder = Math.round(getValue(results[i]) * 10000 ) / 10000
-        if (results[i].length > 5) {
+        
             console.log("Table " + i)
             table_toPrint(results[i])
-        }
-
         
-        if (holder >= GPA_min && holder <= GPA_max) {
-            if (holder > max1) {
-                max1 = holder
-                max1Table = results[i]
-            }
-            else if (holder > max2 && holder !== max1 && (max1-holder) > 1.1) {
-                max2 = holder
-                max2Table = results[i]
-            }
-            else if (holder > max3 && holder !== max1 && holder !== max2 && (max2-holder) > 1.1) {
-                max3 = holder
-                max3Table = results[i]
-            }
-        } 
+        if (!user.summer) {
+            if (holder >= GPA_min && holder <= GPA_max) {
+                if (holder > max1) {
+                    max1 = holder
+                    max1Table = results[i]
+                }
+                else if (holder > max2 && holder !== max1 && (max1-holder) > 1.1) {
+                    max2 = holder
+                    max2Table = results[i]
+                }
+                else if (holder > max3 && holder !== max1 && holder !== max2 && (max2-holder) > 1.1) {
+                    max3 = holder
+                    max3Table = results[i]
+                }
+            } 
+        }
+        else {
+            if (holder >= GPA_min && holder <= GPA_max) {
+                if (holder > max1) {
+                    max1 = holder
+                    max1Table = results[i]
+                }
+                else if (holder > max2 && holder !== max1 && (max1-holder) > 0.5) {
+                    max2 = holder
+                    max2Table = results[i]
+                }
+                else if (holder > max3 && holder !== max1 && holder !== max2 && (max2-holder) > 0.5) {
+                    max3 = holder
+                    max3Table = results[i]
+                }
+            } 
+        }
+        
     }
     max3_result = [max1Table, max2Table, max3Table]
     return max3_result
@@ -515,13 +522,58 @@ var course11 = {
     project: false,
     lab: false
 }
-var course12 = {
-  name: "ISE205",
+var Summer1 = {
+  name: "ISE291",
   credit: 3,
   standingLevel: "Sophomore",
-  difficulty: 2.75,
+  difficulty: 2.93,
   project: false,
   lab: false
+}
+
+var Summer2 = {
+    name: "Math201",
+    credit: 3,
+    standingLevel: "Sophomore",
+    difficulty: 2.74,
+    project: false,
+    lab: false
+}
+
+var Summer3 = {
+    name: "Math208",
+    credit: 3,
+    standingLevel: "Sophomore",
+    difficulty: 2.23,
+    project: false,
+    lab: false
+}
+
+var Summer4 = {
+    name: "IAS212",
+    credit: 2,
+    standingLevel: "Sophomore",
+    difficulty: 1,
+    project: false,
+    lab: false
+}
+
+var Summer5 = {
+    name: "ME216",
+    credit: 4,
+    standingLevel: "Sophomore",
+    difficulty: 2.45,
+    project: false,
+    lab: true
+}
+
+var Summer6 = {
+    name: "ME216",
+    credit: 4,
+    standingLevel: "Sophomore",
+    difficulty: 2.98,
+    project: false,
+    lab: true
 }
 
 
@@ -533,9 +585,16 @@ ExampleCourses = [course1,course2,course3,course4,course5,course6,course7,course
 
 ExampleProblem = new TableCSP(ExampleCourses, ExampleHours)
 
+SummerExampleCourses = [Summer1, course9, Summer2,Summer3,Summer4,Summer5,Summer6]
+SummerHours = [1,8]
+
+SummerExampleProblem = new TableCSP(SummerExampleCourses, SummerHours)
 
 
 
-generate_Tables(ExampleProblem, ExampleCourses, false)
+
+
+//generate_Tables(ExampleProblem, false)
+generate_Tables(SummerExampleProblem)
 
 
