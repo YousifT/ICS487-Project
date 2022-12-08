@@ -1,5 +1,5 @@
 
-const user = {
+let user = {
     name: "Rakan", 
     GPA: 2.7,
     standing: "Sophomore",
@@ -60,7 +60,8 @@ function minHoursAchieved(problem, solution) {
 }
 
 var solution_result = []
-function generate_Tables(problem) {
+function generate_Tables(problem, userIn) {
+    user = userIn
     var solution_array = []
     
     if (!user.summer) {
@@ -78,13 +79,13 @@ function generate_Tables(problem) {
 
     final_result = evaluate_Table(solution_result)
 
-    console.log("FINAL RESULT\nTABLE ONE:")
-    table_toPrint(final_result[0])
-    console.log("TABLE TWO:")
-    table_toPrint(final_result[1])
-    console.log("TABLE THREE:")
-    table_toPrint(final_result[2])
-
+    // console.log("FINAL RESULT\nTABLE ONE:")
+    // table_toPrint(final_result[0])
+    // console.log("TABLE TWO:")
+    // table_toPrint(final_result[1])
+    // console.log("TABLE THREE:")
+    // table_toPrint(final_result[2])
+    return final_result
 
 }
 
@@ -606,7 +607,8 @@ SummerExampleProblem = new TableCSP(SummerExampleCourses, SummerHours)
 
 
 
-generate_Tables(ExampleProblem)
+// generate_Tables(ExampleProblem)
 //generate_Tables(SummerExampleProblem)
 
+module.exports = {generate_Tables}
 
