@@ -76,7 +76,6 @@ getHoursNeeded = (gpa, summer) => {
 // input: doneCourses: a list of string of the courses that the student have done
 getCoursesCanRegister = (doneCourses, standing) => {
     let canRegister = JSON.parse(JSON.stringify(allCourses))
-    let juniorRequired = false
     // prepare prerequisites
     canRegister = canRegister.map((course) => {
         let prerequisites = [];
@@ -103,7 +102,7 @@ getCoursesCanRegister = (doneCourses, standing) => {
         }
     })
 
-    if (standing==="freshman" || standing==="sophomore") {
+    if (standing==="freshman" || standing==="sophomore" || "orientation") {
         canRegister = canRegister.filter((course) => course.juniorRequired==="No")
     }
 
@@ -115,11 +114,9 @@ getCoursesCanRegister = (doneCourses, standing) => {
         let isPrerequisitesDone = true;
         if (course.prerequisites.length > 0)
         course.prerequisites.forEach((pre)=> {
-            console.log(typeof pre)
             if (typeof pre === 'string') {
                 if (!doneCourses.includes(pre)) {
                     isPrerequisitesDone = false
-                    console.log('just no multiple')
                 }
             } else {
                 pre = Object.values(pre)
@@ -136,6 +133,7 @@ getCoursesCanRegister = (doneCourses, standing) => {
         })
         return isPrerequisitesDone
     })
+    canRegister = canRegister.map((course) => course.Course)
     return canRegister
 }
 

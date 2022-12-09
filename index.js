@@ -32,8 +32,8 @@ app.post('/result', (req, res) => {
         summer: summer
     }
 
-    // TODO: before passing courses find the courses the student can register next semester 'do it in the courses moderator'
-    let result = generator.generate_Tables(courses_moderator.getCoursesReady(body.course), courses_moderator.getHoursNeeded(body.gpa, summer), user)
+    let courses = courses_moderator.getCoursesCanRegister(body.course)
+    let result = generator.generate_Tables(courses_moderator.getCoursesReady(courses), courses_moderator.getHoursNeeded(body.gpa, summer), user)
 
     result = result.map((table) => {
         let credit = 0
