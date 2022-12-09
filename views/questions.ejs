@@ -10,7 +10,7 @@
     <h1>ISE Planner</h1>
     <form action="/result" method="post">
         <p>Please fill your information:</p>
-        <label for="">name</label>
+        <label for="">Name: </label>
         <input type="text" name="name" id="name">
         <label for="">GPA:</label>
         <input type="number" name="gpa" id="gpa" min="0" max="4" step="any" required>
@@ -32,8 +32,8 @@
         <fieldset>
             <legend>Courses</legend>
             <% courses.forEach((course) => { %>
-                <label for=""><%= course %> </label>
                 <input type="checkbox" name="course" value="<%= course %>" id="">
+                <label for=""><%= course %> </label>
             <% }) %>
         </fieldset>
         <button type="submit">Submit</button>

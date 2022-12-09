@@ -8,5 +8,22 @@
 </head>
 <body>
     <h1>Result</h1>
+    <p>These are possible plans for next semester ordered from easiest to hardest</p>
+    <div>
+        <% result.forEach((res) => { %>
+            <fieldset>
+                <strong>Courses:</strong>
+                <ul>
+                    <% res.table.forEach((t) => { %>
+                        <li> <p><%= t.name %>: <%= t.credit %> </p> </li>
+                    <% }) %>
+                </ul>
+                <p>
+                    <strong>Total Credit: </strong>
+                    <%= res.credit %>
+                </p>
+            </fieldset>
+        <% }) %>
+    </div>
 </body>
 </html>

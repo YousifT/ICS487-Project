@@ -60,10 +60,12 @@ function minHoursAchieved(problem, solution) {
 }
 
 var solution_result = []
-function generate_Tables(problem, userIn) {
+function generate_Tables(courses, hours, userIn) {
     user = userIn
+
+    let problem = new TableCSP(courses, hours)
+
     var solution_array = []
-    
     if (!user.summer) {
         TableDFS(problem, solution_array, 3)
         TableDFS(problem, solution_array, 4)

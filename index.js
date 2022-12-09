@@ -3,7 +3,8 @@ let ejs = require('ejs')
 const app = express()
 const port = 3000
 
-const io = require('./io')
+const courses_moderator = require('./models/courses_moderator')
+const generator = require('./models/generator.js')
 
 
 app.set('view engine', 'ejs')
@@ -14,7 +15,7 @@ app.get('/', (req, res) => {
 app.use(express.urlencoded({ extended: true }))
 
 app.get('/start', (req, res) => {
-    res.render('questions', {courses: io.getAllCoursesNames()})
+    res.render('questions', {courses: courses_moderator.getAllCoursesNames()})
 })
 
 app.post('/result', (req, res) => {
@@ -31,29 +32,21 @@ app.post('/result', (req, res) => {
         summer: summer
     }
 
-    let courses = []
-    let allCourses = io.getAllCourses();
-    body.course.map((course) => {
-        let target = allCourses.find(courseOn =>{
-            // console.log(courseOn.Course)
-            return courseOn.Course===course
+    // TODO: before passing courses find the courses the student can register next semester 'do it in the courses moderator'
+    let result = generator.generate_Tables(courses_moderator.getCoursesReady(body.course), courses_moderator.getHoursNeeded(body.gpa, summer), user)
+
+    result = result.map((table) => {
+        let credit = 0
+        table.forEach((course) => {
+            credit += course.credit
         })
-        let project = (target.Project=='No')? false : true;
-        let lab = (target.Lab=='No')? false : true;
-        courses.push({
-            name: target.Course,
-            credit: target.Cridit,
-            standingLevel: target['Course Standing'],
-            difficulty: target['Difficulty out of 4'],
-            project: project,
-            lab: lab
-        })
+        return {
+            table: table,
+            credit: credit
+        }
     })
 
-
-    console.log(courses)
-
-    res.render('result')
+    res.render('result', {result: result})
 })
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
