@@ -38,8 +38,20 @@ app.post('/result', (req, res) => {
             // console.log(courseOn.Course)
             return courseOn.Course===course
         })
-        courses.push(target)
+        let project = (target.Project=='No')? false : true;
+        let lab = (target.Lab=='No')? false : true;
+        courses.push({
+            name: target.Course,
+            credit: target.Cridit,
+            standingLevel: target['Course Standing'],
+            difficulty: target['Difficulty out of 4'],
+            project: project,
+            lab: lab
+        })
     })
+
+
+    console.log(courses)
 
     res.render('result')
 })
