@@ -73,4 +73,136 @@ getHoursNeeded = (gpa, summer) => {
     return hours
 }
 
-module.exports = {getAllCourses, getAllCoursesNames, getCourse, getCourses, getCoursesReady, getHoursNeeded}
+// input: doneCourses: a list of string of the courses that the student have done
+getCoursesCanRegister = (doneCourses, standing) => {
+    let canRegister = JSON.parse(JSON.stringify(allCourses))
+    let juniorRequired = false
+    // prepare prerequisites
+    canRegister = canRegister.map((course) => {
+        let prerequisites = [];
+        if (course['Pre-requisite']!=="none"){
+            prerequisites = course['Pre-requisite'].split(" ")
+            prerequisites = prerequisites.map((pre)=> {
+                if (pre.includes("/")) {
+                    return pre.split("/")
+                } else {
+                    return pre
+                }
+            })
+        }
+        return {
+            'Course Standing': course['Course Standing'],
+            prerequisites: prerequisites,
+            Course: course.Course,
+            'Co-requisite': course['Co-requisite'],
+            Cridit: course.Cridit,
+            'Difficulty out of': course['Difficulty out of 4'],
+            Project: course.Project,
+            Lab: course.Lab,
+            juniorRequired: course.juniorRequired
+        }
+    })
+
+    if (standing==="freshman" || standing==="sophomore") {
+        canRegister = canRegister.filter((course) => course.juniorRequired==="No")
+    }
+
+    // remove done courses
+    canRegister = canRegister.filter((course) => !doneCourses.includes(course.Course))
+
+    // remove courses their prerequisites are not taken
+    canRegister = canRegister.filter((course) => {
+        let isPrerequisitesDone = true;
+        if (course.prerequisites.length > 0)
+        course.prerequisites.forEach((pre)=> {
+            console.log(typeof pre)
+            if (typeof pre === 'string') {
+                if (!doneCourses.includes(pre)) {
+                    isPrerequisitesDone = false
+                    console.log('just no multiple')
+                }
+            } else {
+                pre = Object.values(pre)
+                let counter = 0
+                console.log(pre)
+                pre.forEach((preIn) => {
+                    console.log('\nin array\n')
+                    if (doneCourses.includes(preIn)) {
+                        counter++
+                    }
+                })
+                isPrerequisitesDone = counter >= 1
+            }
+        })
+        return isPrerequisitesDone
+    })
+    return canRegister
+}
+
+printChecks = () => {
+    let canRegister = []
+    canRegister = JSON.parse(JSON.stringify(allCourses))
+    canRegister = canRegister.map((course) => {
+        let prerequisites = [];
+        if (course['Pre-requisite']!=="none"){
+            prerequisites = course['Pre-requisite'].split(" ")
+            prerequisites = prerequisites.map((pre)=> {
+                if (pre.includes("/")) {
+                    return pre.split("/")
+                } else {
+                    return pre
+                }
+            })
+        }
+        return {
+            'Course Standing': course['Course Standing'],
+            prerequisites: prerequisites,
+            Course: course.Course,
+            'Co-requisite': course['Co-requisite'],
+            Cridit: course.Cridit,
+            'Difficulty out of': course['Difficulty out of 4'],
+            Project: course.Project,
+            Lab: course.Lab,
+            juniorRequired: course.juniorRequired
+        }
+    })
+
+    let doneCourses = ['MATH101', 'IAS111']
+    canRegister = canRegister.filter((course) => !doneCourses.includes(course.Course))
+
+    // canRegister = canRegister.filter((course) => course.juniorRequired==="No")
+
+    // console.log(canRegister)
+    canRegister = canRegister.filter((course) => {
+        let isPrerequisitesDone = true;
+        if (course.prerequisites.length > 0)
+        course.prerequisites.forEach((pre)=> {
+            console.log(typeof pre)
+            if (typeof pre === 'string') {
+                if (!doneCourses.includes(pre)) {
+                    isPrerequisitesDone = false
+                    console.log('just no multiple')
+                }
+            } else {
+                pre = Object.values(pre)
+                let counter = 0
+                console.log(pre)
+                pre.forEach((preIn) => {
+                    console.log('\nin array\n')
+                    if (doneCourses.includes(preIn)) {
+                        counter++
+                    }
+                })
+                isPrerequisitesDone = counter >= 1
+            }
+        })
+        return isPrerequisitesDone
+    })
+
+
+    console.log(canRegister)
+    console.log(canRegister.length)
+    console.log(allCourses.length)
+}
+
+module.exports = {getAllCourses, getAllCoursesNames, getCourse, getCourses, getCoursesReady, getHoursNeeded, getCoursesCanRegister}
