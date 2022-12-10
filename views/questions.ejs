@@ -6,20 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Course Planner</title>
 </head>
-<body>
+<body class="question">
     <h1>ISE Planner</h1>
     <form action="/result" method="post">
         <p>Please fill your information:</p>
         <label for="">Name: </label>
+        <br>
         <input type="text" name="name" id="name">
+        <br>
         <label for="">GPA:</label>
-        <input type="number" name="gpa" id="gpa" min="0" max="4" step="any" required>
+        <br>
+        <input type="number" name="gpa" id="gpa" min="0" max="4" step="any" placeholder="out of 4" required>
+        <br>
         <label for="">Part-time hours:</label>
+        <br>
         <input type="number" name="partTimeHours" id="credit" min="0" value="0" required>
+        <br>
         <label for="">Standing:</label>
         <select name="standing" id="standing">
-            <option value="orientation">Orientation</option>
-            <option value="freshman">freshman</option>
+            <option value="freshman">Freshman</option>
             <option value="sophomore">Sophomore</option>
             <option value="junior">Junior</option>
             <option value="senior">Senior</option>
@@ -29,13 +34,44 @@
         <label for="">The next semester is a summer semester</label>
         <br>
         <label for="">Choose the courses that you are currently taking and courses you have done: </label>
-        <fieldset>
-            <legend>Courses</legend>
-            <% courses.forEach((course) => { %>
-                <input type="checkbox" name="course" value="<%= course %>" id="">
-                <label for=""><%= course %> </label>
+        <div>
+            <strong>Freshman Courses: </strong>
+            <% courses.freshmanCourses.forEach((course) => { %>
+                <div>
+                    <input type="checkbox" name="course" value="<%= course %>" id="">
+                    <label for=""><%= course %> </label>
+                </div>
             <% }) %>
-        </fieldset>
+        </div>
+        <br>
+        <div>
+            <strong>Sophomore Courses: </strong>
+            <% courses.sophomoreCourses.forEach((course) => { %>
+                <div>
+                    <input type="checkbox" name="course" value="<%= course %>" id="">
+                    <label for=""><%= course %> </label>
+                </div>
+            <% }) %>
+        </div>
+        <br>
+        <div>
+            <strong>Junior Courses: </strong>
+            <% courses.juniorCourses.forEach((course) => { %>
+                <div>
+                    <input type="checkbox" name="course" value="<%= course %>" id="">
+                    <label for=""><%= course %> </label>
+                </div>
+            <% }) %>
+        </div>
+        <br>
+        <div>
+            <strong>Senior Courses: </strong>
+            <% courses.seniorCourses.forEach((course) => { %>
+                <div>
+                    <input type="checkbox" name="course" value="<%= course %>" id="">
+                    <label for=""><%= course %> </label>
+                </div>            <% }) %>
+        </div>
         <button type="submit">Submit</button>
     </form>
 </body>

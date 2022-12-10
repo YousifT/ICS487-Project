@@ -15,7 +15,7 @@ app.get('/', (req, res) => {
 app.use(express.urlencoded({ extended: true }))
 
 app.get('/start', (req, res) => {
-    res.render('questions', {courses: courses_moderator.getAllCoursesNames()})
+    res.render('questions', {courses: courses_moderator.getCoursesByStanding()})
 })
 
 app.post('/result', (req, res) => {

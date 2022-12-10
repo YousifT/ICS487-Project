@@ -34,7 +34,7 @@ const getCourse = (courseName) => {
 
 // input: list of strings
 // output: list of courses
-getCourses = (courses) => {
+const getCourses = (courses) => {
     let result = [];
     courses.forEach((course) => result.push(this.getCourse(course)))
     return result
@@ -42,7 +42,7 @@ getCourses = (courses) => {
 
 // input: list of string
 // output: list of course objects that are ready to generate tables from
-getCoursesReady = (InCourses) => {
+const getCoursesReady = (InCourses) => {
     let courses = []
     InCourses.map((course) => {
         let target = allCourses.find(courseOn =>{
@@ -203,4 +203,20 @@ const printChecks = () => {
     // console.log(allCourses.length)
 }
 
-module.exports = {getAllCourses, getAllCoursesNames, getCourse, getCourses, getCoursesReady, getHoursNeeded, getCoursesCanRegister}
+const getCoursesByStanding = () => {
+    let courses = []
+    // console.log(allCourses)
+    courses = JSON.parse(JSON.stringify(allCourses))
+    let freshmanCourses = courses.filter((course) => course['Course Standing'] === "Freshman")
+    let sophomoreCourses = courses.filter((course) => course['Course Standing'] === "Sophmore")
+    let juniorCourses = courses.filter((course) => course['Course Standing'] === "Junior")
+    let seniorCourses = courses.filter((course) => course['Course Standing'] === "Senior")
+
+    freshmanCourses = freshmanCourses.map((course) => course.Course)
+    sophomoreCourses = sophomoreCourses.map((course) => course.Course)
+    juniorCourses = juniorCourses.map((course) => course.Course)
+    seniorCourses = seniorCourses.map((course) => course.Course)
+    return {freshmanCourses: freshmanCourses, sophomoreCourses: sophomoreCourses, juniorCourses: juniorCourses, seniorCourses: seniorCourses}
+}
+
+module.exports = {getAllCourses, getAllCoursesNames, getCourse, getCourses, getCoursesReady, getHoursNeeded, getCoursesCanRegister, getCoursesByStanding}
