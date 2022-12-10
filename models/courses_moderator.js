@@ -14,20 +14,20 @@ for (let i=0; i<sheets.length; i++) {
    })
 }
 
-printCourses = () => {
+const printCourses = () => {
     console.log(allCourses);
 }
 
 
-getAllCoursesNames = () => {
+const getAllCoursesNames = () => {
     let coursesNames = allCourses.map((course) => course.Course)
     return coursesNames
 }
 
 // return list of objects of courses
-getAllCourses = () => allCourses
+const getAllCourses = () => allCourses
 
-getCourse = (courseName) => {
+const getCourse = (courseName) => {
     let result = allCourses.find((course) => course.Course === courseName)
     return result
 }
@@ -63,7 +63,7 @@ getCoursesReady = (InCourses) => {
     return courses
 }
 
-getHoursNeeded = (gpa, summer) => {
+const getHoursNeeded = (gpa, summer) => {
     let hours
     if (summer) {
         hours = (gpa < 2)? [1, 7] : [1, 8]
@@ -74,7 +74,7 @@ getHoursNeeded = (gpa, summer) => {
 }
 
 // input: doneCourses: a list of string of the courses that the student have done
-getCoursesCanRegister = (doneCourses, standing) => {
+const getCoursesCanRegister = (doneCourses, standing) => {
     let canRegister = JSON.parse(JSON.stringify(allCourses))
     // prepare prerequisites
     canRegister = canRegister.map((course) => {
@@ -121,9 +121,9 @@ getCoursesCanRegister = (doneCourses, standing) => {
             } else {
                 pre = Object.values(pre)
                 let counter = 0
-                console.log(pre)
+                // console.log(pre)
                 pre.forEach((preIn) => {
-                    console.log('\nin array\n')
+                    // console.log('\nin array\n')
                     if (doneCourses.includes(preIn)) {
                         counter++
                     }
@@ -137,7 +137,7 @@ getCoursesCanRegister = (doneCourses, standing) => {
     return canRegister
 }
 
-printChecks = () => {
+const printChecks = () => {
     let canRegister = []
     canRegister = JSON.parse(JSON.stringify(allCourses))
     canRegister = canRegister.map((course) => {
@@ -175,18 +175,18 @@ printChecks = () => {
         let isPrerequisitesDone = true;
         if (course.prerequisites.length > 0)
         course.prerequisites.forEach((pre)=> {
-            console.log(typeof pre)
+            // console.log(typeof pre)
             if (typeof pre === 'string') {
                 if (!doneCourses.includes(pre)) {
                     isPrerequisitesDone = false
-                    console.log('just no multiple')
+                    // console.log('just no multiple')
                 }
             } else {
                 pre = Object.values(pre)
                 let counter = 0
-                console.log(pre)
+                // console.log(pre)
                 pre.forEach((preIn) => {
-                    console.log('\nin array\n')
+                    // console.log('\nin array\n')
                     if (doneCourses.includes(preIn)) {
                         counter++
                     }
@@ -198,9 +198,9 @@ printChecks = () => {
     })
 
 
-    console.log(canRegister)
-    console.log(canRegister.length)
-    console.log(allCourses.length)
+    // console.log(canRegister)
+    // console.log(canRegister.length)
+    // console.log(allCourses.length)
 }
 
 module.exports = {getAllCourses, getAllCoursesNames, getCourse, getCourses, getCoursesReady, getHoursNeeded, getCoursesCanRegister}
