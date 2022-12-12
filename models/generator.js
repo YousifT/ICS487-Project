@@ -294,17 +294,9 @@ function GPA_Range(user) {
     let range = []
     if (user.summer === false) {
         
-        if (user.GPA >= 3.5) {
-            if (user.summer) {
-                range[0] = 10
-                range[1] = 36
-            }
-            else {
-                range[0] = 40
-                range[1] = 50
-            }
-
-
+        if (user.GPA >= 3.5) { 
+            range[0] = 10
+            range[1] = 36
         }
         else if (user.GPA >= 3) {
             range[0] = 35
@@ -609,7 +601,7 @@ SummerExampleProblem = new TableCSP(SummerExampleCourses, SummerHours)
 
 
 
-// generate_Tables(ExampleProblem)
+//generate_Tables(ExampleProblem)
 //generate_Tables(SummerExampleProblem)
 
 module.exports = {generate_Tables}
