@@ -102,15 +102,20 @@ const getCoursesCanRegister = (doneCourses, standing) => {
         }
     })
 
-    if (standing==="freshman" || standing==="sophomore" || "orientation") {
+    if (standing==="freshman" || standing==="sophomore") {
         canRegister = canRegister.filter((course) => course.juniorRequired==="No")
     }
 
     // remove done courses
-    canRegister = canRegister.filter((course) => !doneCourses.includes(course.Course))
+    if (typeof doneCourses != 'undefined')
+    {
+        canRegister = canRegister.filter((course) => !doneCourses.includes(course.Course))
+    }
 
     // remove courses their prerequisites are not taken
-    canRegister = canRegister.filter((course) => {
+    if (typeof doneCourses != "undefined")
+    {
+        canRegister = canRegister.filter((course) => {
         let isPrerequisitesDone = true;
         if (course.prerequisites.length > 0)
         course.prerequisites.forEach((pre)=> {
@@ -132,7 +137,7 @@ const getCoursesCanRegister = (doneCourses, standing) => {
             }
         })
         return isPrerequisitesDone
-    })
+    })}
     canRegister = canRegister.map((course) => course.Course)
     return canRegister
 }

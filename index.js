@@ -1,7 +1,7 @@
 const express = require('express')
 let ejs = require('ejs')
 const app = express()
-const port = 3000
+const port = process.env.PORT || 3000
 
 const courses_moderator = require('./models/courses_moderator')
 const generator = require('./models/generator.js')
